@@ -1,0 +1,107 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DenyWriteAccessToEssentialDevOpsServices",
+        "Effect": "Deny",
+        "Action": [
+          "config:Delete*",
+          "config:Put*",
+          "config:Start*",
+          "config:Stop*",
+          "config:Untag*",
+          "servicequotas:Delete*",
+          "servicequotas:Put*",
+          "servicequotas:Associate*",
+          "servicequotas:Disassociate*",
+          "servicequotas:Request*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/devopsPriv"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyWriteAccessToELBandSecrets",
+        "Effect": "Deny",
+        "Action": [
+          "secretsmanager:Delete*",
+          "secretsmanager:Update*",
+          "secretsmanager:Put*",
+          "secretsmanager:Rotate*",
+          "secretsmanager:Restore*",
+          "elasticloadbalancing:Create*",
+          "elasticloadbalancing:Attach*",
+          "elasticloadbalancing:Delete*",
+          "elasticloadbalancing:Modify*",
+          "elasticloadbalancing:Set*",
+          "elasticloadbalancing:Remove*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/devopsPriv",
+              "arn:aws:iam::*:user/serviceAccount*",
+              "arn:aws:iam::*:role/serviceRole*",
+              "arn:aws:iam::*:role/eksctl*"
+            ]
+          }
+        }
+      },     
+      {
+        "Sid": "DenyOperationsToEC2Instances",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:Reboot*",
+          "ec2:Stop*",
+          "ec2:Terminate*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/devopsPriv",
+              "arn:aws:iam::*:user/serviceAccount*",
+
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/devopsNonpriv",
+              "arn:aws:iam::123456789012:role/developer",
+              "arn:aws:iam::123456789012:role/developer",
+              "arn:aws:iam::123456789012:role/developer",
+              "arn:aws:iam::123456789012:role/developer",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv",
+              "arn:aws:iam::123456789012:role/securityNonpriv"
+            ]
+          }
+        }
+      }
+    ]
+  }
+  

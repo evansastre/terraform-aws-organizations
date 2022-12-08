@@ -1,0 +1,117 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DenyLeavingOrganizations",
+        "Effect": "Deny",
+        "Action": [
+          "organizations:LeaveOrganization"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "DenyAccessToBilling",
+        "Effect": "Deny",
+        "Action": [
+          "aws-portal:Modify*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyRunInstancesWithNoSchoolTag",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:RunInstances"
+        ],
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*"
+        ],
+        "Condition": {
+          "ForAllValues:StringNotEquals": {
+            "aws:TagKeys": [
+              "school"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyRunInstancesWithNoProjectTag",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:RunInstances"
+        ],
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*"
+        ],
+        "Condition": {
+          "ForAllValues:StringNotEquals": {
+            "aws:TagKeys": [
+              "project"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyRunInstancesWithNoSubprojectTag",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:RunInstances"
+        ],
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*"
+        ],
+        "Condition": {
+          "ForAllValues:StringNotEquals": {
+            "aws:TagKeys": [
+              "subproject"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyRunInstancesWithNoEnvirTag",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:RunInstances"
+        ],
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*"
+        ],
+        "Condition": {
+          "ForAllValues:StringNotEquals": {
+            "aws:TagKeys": [
+              "envir"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyRunInstancesWithNocontactTag",
+        "Effect": "Deny",
+        "Action": [
+          "ec2:RunInstances"
+        ],
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*"
+        ],
+        "Condition": {
+          "ForAllValues:StringNotEquals": {
+            "aws:TagKeys": [
+              "contact"
+            ]
+          }
+        }
+      }
+    ]
+  }

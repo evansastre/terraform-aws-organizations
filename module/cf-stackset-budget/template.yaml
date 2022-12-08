@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This is to create budget for sub accounts in sandbox OU
+
+Parameters:
+  BudgetAmount:
+    Type: Number
+    Default: 10000
+  Threshold:
+    Type: Number
+    Default: 100
+  EmailAddress:
+    Type: String
+    Default: "sre_devops@enterprise.com"
+
+Resources:
+  Budget:
+    Type: "AWS::Budgets::Budget"
+    Properties:
+      Budget:
+        BudgetLimit:
+          Amount: !Ref BudgetAmount
+          Unit: USD
+        TimeUnit: MONTHLY
+        TimePeriod:
+          Start: 1659338698
+          End: 2606109885
+        BudgetType: COST
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: !Ref Threshold
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref EmailAddress
+
+Outputs:
+  BudgetId:
+    Value: !Ref Budget

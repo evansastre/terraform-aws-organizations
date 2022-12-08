@@ -1,0 +1,118 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DenyWriteAccessToEssentialSecurityServices",
+        "Effect": "Deny",
+        "Action": [
+          "cloudtrail:UpdateTrail",
+          "cloudtrail:UpdateEventDataStore",
+          "cloudtrail:DeleteEventDataStore",
+          "cloudtrail:DeleteTrail",
+          "cloudwatch:Delete*",
+          "cloudwatch:Enable*",
+          "cloudwatch:Start*",
+          "cloudwatch:Stop*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/securityNonpriv"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyWriteAccessToIAMSecurityServices",
+        "Effect": "Deny",
+        "Action": [
+          "iam:Add*",
+          "iam:CreateA*",
+          "iam:CreateG*",
+          "iam:CreateL*",
+          "iam:CreateO*",
+          "iam:CreateR*",
+          "iam:CreateSA*",
+          "iam:CreateServiceSpecificCredential",
+          "iam:CreateU*",
+          "iam:Update*",
+          "iam:ChangePassword",
+          "iam:De*",
+          "iam:Enable*",
+          "iam:Generate*",
+          "iam:Remove*",
+          "iam:Set*",
+          "iam:Reset*",
+          "iam:Resync*",
+          "iam:Tag*",
+          "iam:Untag*",
+          "iam:Upload*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/securityIamManager",
+              "arn:aws:iam::*:role/stacksets-exec-f213c5af7c89810330805cd20181a910",
+              "arn:aws:iam::*:role/serviceRole*",
+              "arn:aws:iam::*:user/serviceAccount*",
+              "arn:aws:iam::*:role/OrganizationAccountAccessRole"
+            ]
+          }
+        }
+      },
+      {
+        "Sid": "DenyWriteAccessToNetworkSecurityServices",
+        "Effect": "Deny",
+        "Action": [
+          "network-firewall:Create*",
+          "network-firewall:Delete*",
+          "network-firewall:Associate*",
+          "network-firewall:Update*",
+          "networkmanager:Accept*",
+          "networkmanager:Associate*",
+          "networkmanager:Create*",
+          "networkmanager:Disassociate*",
+          "networkmanager:Put*",
+          "networkmanager:Update*",
+          "networkmanager:Start*",
+          "networkmanager:De*",
+          "networkmanager:Execute*",
+          "networkmanager:Re*",
+          "networkmanager:Tag*",
+          "networkmanager:Untag*",
+          "globalaccelerator:Add*",
+          "globalaccelerator:Create*",
+          "globalaccelerator:Delete*",
+          "globalaccelerator:Update*",
+          "route53:Create*",
+          "route53:Change*",
+          "route53:Delete*",
+          "route53:Associate*",
+          "route53:Update*",
+          "network-firewall:Create*",
+          "network-firewall:Delete*",
+          "network-firewall:Associate*",
+          "network-firewall:Update*"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "ForAnyValue:ArnNotLike": {
+            "aws:PrincipalArn": [
+              "arn:aws:iam::*:role/enterpriseAdmin",
+              "arn:aws:iam::*:role/securityNetworkManager"
+            ]
+          }
+        }
+      }
+    ]
+  }

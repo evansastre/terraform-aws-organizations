@@ -1,0 +1,173 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This is to create SSO IAM roles in the target account
+
+Resources: 
+
+  denyBillingAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pol-deny-billing-access
+      PolicyDocument: 
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Deny
+            Action:
+              - aws-portal:*
+            Resource: "*"
+
+  denySensitiveDataAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pol-deny-sensitive-data-access
+      PolicyDocument: 
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Deny
+            Action:
+              - s3:GetObject
+              - rds:Download*
+              - secretsmanager:Get*
+            Resource: "*"
+
+  devopsNonprivRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: devopsNonpriv
+      Description: devops nonpriv role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - !Ref denySensitiveDataAccessPolicy
+
+  devopsPrivRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: devopsPriv
+      Description: devops priv role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  developerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: developer
+      Description: developer role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - !Ref denySensitiveDataAccessPolicy
+        - !Ref denyBillingAccessPolicy
+
+  securityNetworkManagerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: securityNetworkManager
+      Description: security network manager role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/job-function/NetworkAdministrator
+        - arn:aws:iam::aws:policy/AmazonRoute53ResolverFullAccess
+        - arn:aws:iam::aws:policy/AWSResourceAccessManagerFullAccess
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+       
+  securityIamManagerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: securityIamManager
+      Description: security iam manager role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+
+  securityNonprivRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: securityNonpriv
+      Description: security nonpriv role in the aws account
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::$${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      MaxSessionDuration: 28800
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AWSCloudShellFullAccess
+        - !Ref denySensitiveDataAccessPolicy

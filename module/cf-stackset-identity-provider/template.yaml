@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This is to create enterprise IAM IdP provider and enterpriseAdmin role in each child account
+
+Resources: 
+  enterpriseAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: enterpriseAdmin
+      Description: enterpriseAdmin role in all child accounts
+      MaxSessionDuration: 28800
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated:
+                - !Sub 'arn:aws:iam::${AWS::AccountId}:saml-provider/enterprise-iam'
+            Action:
+              - sts:AssumeRoleWithSAML
+            Condition:
+              StringEquals:
+                'SAML:aud': 'https://signin.aws.amazon.com/saml'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  enterpriseIAM:
+    Type: AWS::IAM::SAMLProvider
+    Properties: 
+      Name: 'enterprise-iam'
+      SamlMetadataDocument: '<?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://enterprise.com" validUntil="2032-06-07T09:23:20.478Z"><md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIIDTTCCAjWgAwIBAgIEOemU8jANBgkqhkiG9w0BAQsFADBXMQswCQYDVQQGEwJDTjELMAkGA1UECBMCc2gxCzAJBgNVBAcTAnNoMQ4wDAYDVQQKEwVzZW5zZTEOMAwGA1UECxMFc2Vuc2UxDjAMBgNVBAMTBXNlbnNlMB4XDTE5MTEyODA3MDYzNFoXDTI5MTEyNTA3MDYzNFowVzELMAkGA1UEBhMCQ04xCzAJBgNVBAgTAnNoMQswCQYDVQQHEwJzaDEOMAwGA1UEChMFc2Vuc2UxDjAMBgNVBAsTBXNlbnNlMQ4wDAYDVQQDEwVzZW5zZTGGASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAIxCkGbF3z2IjA+ZpBfhUtL2YCLBwMHLmbX9/n5Pmst/w6FsK7Xg6+7Sq0S5xm9wQ+KMuQ2AWYUsgRqvj3A8nGaTZvkdX/Znz6B1qJtIsJ7Dp7ssfso1Bf8vLxlaMYKw//QfHFH+xZUI3H3DSYDLa7/7QXr0eFSeDiVO6jew796FsjktflJZ/leySlKa8QOk4yXKhFeHI7w1OFk/WEqbaMVPv3p3PSUHLgIuLS6UfMUrBwJFevf9qQ6rku/RPOh/TSUpHSfgP/xmHyAeofMy+X+BAEdozaNx1Esiy2HeJbG9QeDhT9SmkKQ5ccNHNQ7JslpE8xyCoZE3iteY6rUS8YkCAwEAAaMhMB8wHQYDVR0OBBYEFAVkZHEer+voQm7eFeoRsc/2yYDEMA0GCSqGSIb3DQEBCwUAA4IBAQBv3RaC4nyoyQ+l2jetgZqiz7xHV6S93uAPUIe7fl/3fu2q2iZSIQzdE5M6JGxlcu8Ey4JNmsbV6u2ovAMfz0c2FUhmQnmRBjpmDBm6P1GBLsCQpv7rC54U0X6Nx6qOfeFuB6tc0wF0nEhypNRujsEr5dWdIHJLS0dhvHT44myV2y+CmPB8UB/WpqFQB1hlQwSyUe57gjfbiB5ryc2LpxQVh+s19HyGMTE/Efaxugho8hzzFxwQ7PUH5uIIo2QCPF/ei46hysDO6W6GlqQEDO1RWh4GJxePSsAGl+dB2NZpXFmmvKokR/0oe5up3hulbZpXg55VYCmPdO1/AtgL49aU</ds:X509Certificate><ds:X509IssuerSerial><ds:X509IssuerName>CN=enterprise, OU=enterprise, O=enterprise, L=sh, ST=sh, C=CN</ds:X509IssuerName><ds:X509SerialNumber>97X6093XX</ds:X509SerialNumber></ds:X509IssuerSerial><ds:X509SubjectName>CN=enterprise, OU=enterprise, O=enterprise, L=sh, ST=sh, C=CN</ds:X509SubjectName></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:KeyDescriptor use="encryption"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIIDTTCCAjWgAwIBAgIEOemU8jANBgkqhkiG9w0BAQsFADBXMQswCQYDVQQGEwJDTjELMAkGA1UECBMCc2gxCzAJBgNVBAcTAnNoMQ4wDAYDVQQKEwVzZW5zZTEOMAwGA1UECxMFc2Vuc2UxDjAMBgNVBAMTBXNlbnNlMB4XDTE5MTEyODA3MDYzNFoXDTI5MTEyNTA3MDYzNFowVzELMAkGA1UEBhMCQ04xCzAJBgNVBAgTAnNoMQswCQYDVQQHEwJzaDEOMAwGA1UEChMFc2Vuc2UxDjAMBgNVBAsTBXNlbnNlMQ4wDAYDVQQDEwVzZW5zZTCCASIwDQYJKoZIhvcNAQEEEQADggEPADCCAQoCggEBAIxCkGbF3z2IjA+ZpBfhUtL2YCLBwDHLmbX9/n5Pmst/w6FsK7Xg6+7Sq0S5xm9wQ+KMuQ2AWYUsgRqvj3A8nGaTZvkdX/Znz6B1qJtIsJ7Dp7ssfso1Bf8vLxlaMYKw//QfHFH+xZUI3H3DSYDLa7/7QXr0eFSeDiVO6jew796FsjktflJZ/leySlKa8QOk4yXKhFeHI7w1OFk/WEqbaMVPv3p3PSUHLgIuLS6UfMUrBwJFevf9qQ6rku/RPOh/TSUpHSfgP/xmHyAeofMy+X+BAEdozaNx1Esiy2HeJbG9QeDhT9SmkKQ5ccNHNQ7JslpE8xyCoZE3iteY6rUS8YkCAwEAAaMhMB8wHQYDVR0OBBYEFAVkZHEer+voQm7eFeoRsc/2yYDEMA0GCSqGSIb3DQEBCwUAA4IBAQBv3RaC4nyoyQ+l2jetgZqiz7xHV6S93uAPUIe7fl/3fu2q2iZSIQzdE5M6JGxlcu8Ey4JNmsbV6u2ovAMfz0c2FUhmQnmRBjpmDBm6P1GBLsCQpv7rC54U0X6Nx6qOfeFuB6tc0wF0nEhypNRujsEr5dWdIHJLS0dhvHT44myV2y+CmPB8UB/WpqFQB1hlQwSyUe57gjfbiB5ryc2LpxQVh+s19HyGMTE/Efaxugho8hzzFxwQ7PUH5uIIo2QCPF/ei46hysDO6W6GlqQEDO1RWh4GJxePSsAGl+dB2NZpXFmmvKokR/0oe5up3hulbZpXg55VYCmPdO1/AtgL49aU</ds:X509Certificate><ds:X509IssuerSerial><ds:X509IssuerName>CN=enterprise, OU=enterprise, O=enterprise, L=sh, ST=sh, C=CN</ds:X509IssuerName><ds:X509SerialNumber>971609330</ds:X509SerialNumber></ds:X509IssuerSerial><ds:X509SubjectName>CN=enterprise, OU=enterprise, O=enterprise, L=sh, ST=sh, C=CN</ds:X509SubjectName></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/login" index="0" isDefault="true"/><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/logout" ResponseLocation="https://portal.enterprise.com/iam/sso/saml2/APP048/logout"/><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/logout" ResponseLocation="https://portal.enterprise.com/iam/sso/saml2/APP048/logout"/><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/login"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/login"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://portal.enterprise.com/iam/sso/saml2/APP048/login"/></md:IDPSSODescriptor></md:EntityDescriptor>'
